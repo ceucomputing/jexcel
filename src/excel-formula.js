@@ -21,156 +21,156 @@
     }
     var excelFormulaUtilities = window.excelFormulaUtilities = window.excelFormulaUtilities || {};
     var core = window.excelFormulaUtilities.core = {};
-    window.excelFormulaUtilities.string = window.excelFormulaUtilities.string || {};
-    
-    /**
-    * Simple/quick string formater. This will take an input string and apply n number of arguments to it.
-    *
-    * <b>example:</b><br />
-    * <code>
-    * <pre>
-    *   var foo = excelFormulaUtilities.core.formatStr("{0}", "foo"); // foo will be set to "foo"
-    *   var fooBar = excelFormulaUtilities.core.formatStr("{0} {1}", "foo", "bar"); // fooBar will be set to "fooBar"
-    *   var error = excelFormulaUtilities.core.formatStr("{1}", "error"); // will throw an index out of range error since only 1 extra argument was passed, which would be index 0.
-    * </pre>
-    * </code>
-    *
+	window.excelFormulaUtilities.string = window.excelFormulaUtilities.string || {};
+	
+	/**
+	* Simple/quick string formater. This will take an input string and apply n number of arguments to it.
+	*
+	* <b>example:</b><br />
+	* <code>
+	* <pre>
+	*	var foo = excelFormulaUtilities.core.formatStr("{0}", "foo"); // foo will be set to "foo"
+	*	var fooBar = excelFormulaUtilities.core.formatStr("{0} {1}", "foo", "bar"); // fooBar will be set to "fooBar"
+	*	var error = excelFormulaUtilities.core.formatStr("{1}", "error"); // will throw an index out of range error since only 1 extra argument was passed, which would be index 0.
+	* </pre>
+	* </code>
+	*
     * @memberOf window.excelFormulaUtilities.core
-    * @function
+	* @function
     * @param {String} inStr 
     **/
-    var formatStr = window.excelFormulaUtilities.string.formatStr = function(inStr) {
-            var formattedStr = inStr;
-            var argIndex = 1;
-            for (; argIndex < arguments.length; argIndex++) {
-                var replaceIndex = (argIndex - 1);
-                var replaceRegex = new RegExp("\\{{1}" + replaceIndex.toString() + "{1}\\}{1}", "g");
-                formattedStr = formattedStr.replace(replaceRegex, arguments[argIndex]);
-            }
-            return formattedStr;
-        };
+	var formatStr = window.excelFormulaUtilities.string.formatStr = function(inStr) {
+			var formattedStr = inStr;
+			var argIndex = 1;
+			for (; argIndex < arguments.length; argIndex++) {
+				var replaceIndex = (argIndex - 1);
+				var replaceRegex = new RegExp("\\{{1}" + replaceIndex.toString() + "{1}\\}{1}", "g");
+				formattedStr = formattedStr.replace(replaceRegex, arguments[argIndex]);
+			}
+			return formattedStr;
+		};
     
     var trim = window.excelFormulaUtilities.string.trim = function(inStr){
-            return inStr.replace(/^\s|\s$/, "");
-        };
-    
-    var trimHTML = window.excelFormulaUtilities.string.trim = function(inStr){
-            return inStr.replace(/^(?:\s|&nbsp;|<\s*br\s*\/*\s*>)*|(?:\s|&nbsp;|<\s*br\s*\/*\s*>)*$/, "");
-        };
+			return inStr.replace(/^\s|\s$/, "");
+		};
+	
+	var trimHTML = window.excelFormulaUtilities.string.trim = function(inStr){
+			return inStr.replace(/^(?:\s|&nbsp;|<\s*br\s*\/*\s*>)*|(?:\s|&nbsp;|<\s*br\s*\/*\s*>)*$/, "");
+		};
 
-    //Quick and dirty type checks
-    /**
-    * @param {object} obj
-    * @returns {boolean}
-    * @memberOf window.excelFormulaUtilities.core
-    */
-    var isFunction = core.isFunction = function (obj) {
-        return (typeof obj) === "function";
-    };
+	//Quick and dirty type checks
+	/**
+	* @param {object} obj
+	* @returns {boolean}
+	* @memberOf window.excelFormulaUtilities.core
+	*/
+	var isFunction = core.isFunction = function (obj) {
+		return (typeof obj) === "function";
+	};
 
-    /**
-    * @param {object} obj
-    * @returns {boolean}
-    * @memberOf window.excelFormulaUtilities.core
-    */
-    var isArray = core.isArray = function (obj) {
-        return (typeof obj) === "object" && obj.length;
-    };
+	/**
+	* @param {object} obj
+	* @returns {boolean}
+	* @memberOf window.excelFormulaUtilities.core
+	*/
+	var isArray = core.isArray = function (obj) {
+		return (typeof obj) === "object" && obj.length;
+	};
 
-    /**
-    * @param {object} obj
-    * @returns {boolean}
-    * @memberOf window.excelFormulaUtilities.core
-    */
-    var isWindow = core.isWindow = function () {
-        return obj && typeof obj === "object" && "setInterval" in obj;
-    }; /*----The functionality below has based off of the jQuery core library----*/
+	/**
+	* @param {object} obj
+	* @returns {boolean}
+	* @memberOf window.excelFormulaUtilities.core
+	*/
+	var isWindow = core.isWindow = function () {
+		return obj && typeof obj === "object" && "setInterval" in obj;
+	}; /*----The functionality below has based off of the jQuery core library----*/
 
-    /**
-    * Check if the object is a plain object or not. This has been pulled from the jQuery core and modified slightly.
-    * @param {object} obj
-    * @returns {boolean} returns weather the object is a plain object or not.
-    * @memberOf window.excelFormulaUtilities.core
-    */
-    var isPlainObject = core.isPlainObject = function (obj) {
-        // Must be an Object.
-        // Because of IE, we also have to check the presence of the constructor property.
-        // Make sure that DOM nodes and window objects don't pass through, as well
-        if (!obj || typeof obj !== "object" || obj.nodeType || isWindow(obj)) {
-            return false;
-        }
-        // Not own constructor property must be Object
-        if (obj.constructor && !hasOwnProperty.call(obj, "constructor") && !hasOwnProperty.call(obj.constructor.prototype, "isPrototypeOf")) {
-            return false;
-        }
-        // Own properties are enumerated firstly, so to speed up,
-        // if last one is own, then all properties are own.
-        var key;
-        for (key in obj) { }
-        return key === undefined || hasOwnProperty.call(obj, key);
-    };
+	/**
+	* Check if the object is a plain object or not. This has been pulled from the jQuery core and modified slightly.
+	* @param {object} obj
+	* @returns {boolean} returns weather the object is a plain object or not.
+	* @memberOf window.excelFormulaUtilities.core
+	*/
+	var isPlainObject = core.isPlainObject = function (obj) {
+		// Must be an Object.
+		// Because of IE, we also have to check the presence of the constructor property.
+		// Make sure that DOM nodes and window objects don't pass through, as well
+		if (!obj || typeof obj !== "object" || obj.nodeType || isWindow(obj)) {
+			return false;
+		}
+		// Not own constructor property must be Object
+		if (obj.constructor && !hasOwnProperty.call(obj, "constructor") && !hasOwnProperty.call(obj.constructor.prototype, "isPrototypeOf")) {
+			return false;
+		}
+		// Own properties are enumerated firstly, so to speed up,
+		// if last one is own, then all properties are own.
+		var lastKey;
+		for (key in obj) { lastKey = key; }
+		return lastKey === undefined || hasOwnProperty.call(obj, lastKey);
+	};
 
-    /**
-    * This has been pulled from the jQuery core and modified slightly. see http://api.jquery.com/jQuery.extend/
-    * @param {object} target
-    * @param {object} object add one or more object to extend the target.
-    * @returns {object} returns the extended object.
-    * @memberOf window.excelFormulaUtilities.core
-    */
-    var extend = core.extend = function () {
-        var options, name, src, copy, copyIsArray, clone, target = arguments[0] || {},
-        i = 1,
-        length = arguments.length,
-        deep = false;
-        // Handle a deep copy situation
-        if (typeof target === "boolean") {
-            deep = target;
-            target = arguments[1] || {};
-            // skip the boolean and the target
-            i = 2;
-        }
-        // Handle case when target is a string or something (possible in deep copy)
-        if (typeof target !== "object" && !isFunction(target)) {
-            target = {};
-        }
-        // extend jQuery itself if only one argument is passed
-        if (length === i) {
-            target = this;
-            --i;
-        }
-        for (; i < length; i++) {
-            // Only deal with non-null/undefined values
-            if ((options = arguments[i]) != null) {
-                // Extend the base object
-                for (name in options) {
-                    src = target[name];
-                    copy = options[name];
-                    // Prevent never-ending loop
-                    if (target === copy) {
-                        continue;
-                    }
-                    // Recurse if we're merging plain objects or arrays
-                    if (deep && copy && (isPlainObject(copy) || (copyIsArray = isArray(copy)))) {
-                        if (copyIsArray) {
-                            copyIsArray = false;
-                            clone = src && isArray(src) ? src : [];
-                        } else {
-                            clone = src && isPlainObject(src) ? src : {};
-                        }
-                        // Never move original objects, clone them
-                        target[name] = core.extend(deep, clone, copy);
-                        // Don't bring in undefined values
-                    } else if (copy !== undefined) {
-                        target[name] = copy;
-                    }
-                }
-            }
-        }
-        // Return the modified object
-        return target;
-    }; /*----end of jquery functionality----*/
+	/**
+	* This has been pulled from the jQuery core and modified slightly. see http://api.jquery.com/jQuery.extend/
+	* @param {object} target
+	* @param {object} object add one or more object to extend the target.
+	* @returns {object} returns the extended object.
+	* @memberOf window.excelFormulaUtilities.core
+	*/
+	var extend = core.extend = function () {
+		var options, name, src, copy, copyIsArray, clone, target = arguments[0] || {},
+		i = 1,
+		length = arguments.length,
+		deep = false;
+		// Handle a deep copy situation
+		if (typeof target === "boolean") {
+			deep = target;
+			target = arguments[1] || {};
+			// skip the boolean and the target
+			i = 2;
+		}
+		// Handle case when target is a string or something (possible in deep copy)
+		if (typeof target !== "object" && !isFunction(target)) {
+			target = {};
+		}
+		// extend jQuery itself if only one argument is passed
+		if (length === i) {
+			target = this;
+			--i;
+		}
+		for (; i < length; i++) {
+			// Only deal with non-null/undefined values
+			if ((options = arguments[i]) != null) {
+				// Extend the base object
+				for (name in options) {
+					src = target[name];
+					copy = options[name];
+					// Prevent never-ending loop
+					if (target === copy) {
+						continue;
+					}
+					// Recurse if we're merging plain objects or arrays
+					if (deep && copy && (isPlainObject(copy) || (copyIsArray = isArray(copy)))) {
+						if (copyIsArray) {
+							copyIsArray = false;
+							clone = src && isArray(src) ? src : [];
+						} else {
+							clone = src && isPlainObject(src) ? src : {};
+						}
+						// Never move original objects, clone them
+						target[name] = core.extend(deep, clone, copy);
+						// Don't bring in undefined values
+					} else if (copy !== undefined) {
+						target[name] = copy;
+					}
+				}
+			}
+		}
+		// Return the modified object
+		return target;
+	}; /*----end of jquery functionality----*/
 
-    
+	
 }());
 
 /*
@@ -227,8 +227,9 @@
      * @class
      */
 
-    function F_token(value, type, subtype) {
+    function F_token(value, index, type, subtype) {
         this.value = value;
+        this.index = index;
         this.type = type;
         this.subtype = subtype;
     }
@@ -241,11 +242,11 @@
 
         this.items = [];
 
-        this.add = function (value, type, subtype) {
+        this.add = function (value, index, type, subtype) {
             if (!subtype) {
                 subtype = "";
             }
-            var token = new F_token(value, type, subtype);
+            var token = new F_token(value, index, type, subtype);
             this.addRef(token);
             return token;
         };
@@ -298,9 +299,9 @@
         this.push = function (token) {
             this.items.push(token);
         };
-        this.pop = function (name) {
+        this.pop = function (name, index) {
             var token = this.items.pop();
-            return (new F_token(name || "", token.type, TOK_SUBTYPE_STOP));
+            return (new F_token(name || "", index, token.type, TOK_SUBTYPE_STOP));
         };
 
         this.token = function () {
@@ -372,7 +373,7 @@
                         offset += 1;
                     } else {
                         inString = false;
-                        tokens.add(token, TOK_TYPE_OPERAND, TOK_SUBTYPE_TEXT);
+                        tokens.add(token, offset - token.length, TOK_TYPE_OPERAND, TOK_SUBTYPE_TEXT);
                         token = "";
                     }
                 } else {
@@ -422,7 +423,7 @@
                 offset += 1;
                 if ((",#NULL!,#DIV/0!,#VALUE!,#REF!,#NAME?,#NUM!,#N/A,").indexOf("," + token + ",") !== -1) {
                     inError = false;
-                    tokens.add(token, TOK_TYPE_OPERAND, TOK_SUBTYPE_ERROR);
+                    tokens.add(token, offset - token.length, TOK_TYPE_OPERAND, TOK_SUBTYPE_ERROR);
                     token = "";
                 }
                 continue;
@@ -444,7 +445,7 @@
             if (currentChar() === "\"") {
                 if (token.length > 0) {
                     // not expected
-                    tokens.add(token, TOK_TYPE_UNKNOWN);
+                    tokens.add(token, offset - token.length, TOK_TYPE_UNKNOWN);
                     token = "";
                 }
                 inString = true;
@@ -455,7 +456,7 @@
             if (currentChar() === "'") {
                 if (token.length > 0) {
                     // not expected
-                    tokens.add(token, TOK_TYPE_UNKNOWN);
+                    tokens.add(token, offset - token.length, TOK_TYPE_UNKNOWN);
                     token = "";
                 }
                 token = "'"
@@ -474,7 +475,7 @@
             if (currentChar() === "#") {
                 if (token.length > 0) {
                     // not expected
-                    tokens.add(token, TOK_TYPE_UNKNOWN);
+                    tokens.add(token, offset - token.length, TOK_TYPE_UNKNOWN);
                     token = "";
                 }
                 inError = true;
@@ -487,11 +488,11 @@
             if (currentChar() === "{") {
                 if (token.length > 0) {
                     // not expected
-                    tokens.add(token, TOK_TYPE_UNKNOWN);
+                    tokens.add(token, offset - token.length, TOK_TYPE_UNKNOWN);
                     token = "";
                 }
-                tokenStack.push(tokens.add("ARRAY", TOK_TYPE_FUNCTION, TOK_SUBTYPE_START));
-                tokenStack.push(tokens.add("ARRAYROW", TOK_TYPE_FUNCTION, TOK_SUBTYPE_START));
+                tokenStack.push(tokens.add("ARRAY", offset, TOK_TYPE_FUNCTION, TOK_SUBTYPE_START));
+                tokenStack.push(tokens.add("ARRAYROW", offset, TOK_TYPE_FUNCTION, TOK_SUBTYPE_START));
                 offset += 1;
                 continue;
             }
@@ -500,25 +501,25 @@
                 if(root.excelFormulaUtilities.isEu){
                     // If is EU then handle ; as list seperators
                     if (token.length > 0) {
-                        tokens.add(token, TOK_TYPE_OPERAND);
+                        tokens.add(token, offset - token.length, TOK_TYPE_OPERAND);
                         token = "";
                     }
                     if (tokenStack.type() !== TOK_TYPE_FUNCTION) {
-                        tokens.add(currentChar(), TOK_TYPE_OP_IN, TOK_SUBTYPE_UNION);
+                        tokens.add(currentChar(), offset, TOK_TYPE_OP_IN, TOK_SUBTYPE_UNION);
                     } else {
-                        tokens.add(currentChar(), TOK_TYPE_ARGUMENT);
+                        tokens.add(currentChar(), offset, TOK_TYPE_ARGUMENT);
                     }
                     offset += 1;
                     continue;
                 } else {
                     // Else if not Eu handle ; as array row seperator
                     if (token.length > 0) {
-                        tokens.add(token, TOK_TYPE_OPERAND);
+                        tokens.add(token, offset - token.length, TOK_TYPE_OPERAND);
                         token = "";
                     }
-                    tokens.addRef(tokenStack.pop());
-                    tokens.add(",", TOK_TYPE_ARGUMENT);
-                    tokenStack.push(tokens.add("ARRAYROW", TOK_TYPE_FUNCTION, TOK_SUBTYPE_START));
+                    tokens.addRef(tokenStack.pop("", offset));
+                    tokens.add(",", offset, TOK_TYPE_ARGUMENT);
+                    tokenStack.push(tokens.add("ARRAYROW", offset + 1, TOK_TYPE_FUNCTION, TOK_SUBTYPE_START));
                     offset += 1;
                     continue;
                 }
@@ -526,11 +527,11 @@
 
             if (currentChar() === "}") {
                 if (token.length > 0) {
-                    tokens.add(token, TOK_TYPE_OPERAND);
+                    tokens.add(token, offset - token.length, TOK_TYPE_OPERAND);
                     token = "";
                 }
-                tokens.addRef(tokenStack.pop("ARRAYROWSTOP"));
-                tokens.addRef(tokenStack.pop("ARRAYSTOP"));
+                tokens.addRef(tokenStack.pop("ARRAYROWSTOP", offset));
+                tokens.addRef(tokenStack.pop("ARRAYSTOP", offset));
                 offset += 1;
                 continue;
             }
@@ -538,10 +539,10 @@
             // trim white-space
             if (currentChar() === " ") {
                 if (token.length > 0) {
-                    tokens.add(token, TOK_TYPE_OPERAND);
+                    tokens.add(token, offset - token.length, TOK_TYPE_OPERAND);
                     token = "";
                 }
-                tokens.add("", TOK_TYPE_WSPACE);
+                tokens.add("", offset, TOK_TYPE_WSPACE);
                 offset += 1;
                 while ((currentChar() === " ") && (!EOF())) {
                     offset += 1;
@@ -552,10 +553,10 @@
             // multi-character comparators
             if ((",>=,<=,<>,").indexOf("," + doubleChar() + ",") !== -1) {
                 if (token.length > 0) {
-                    tokens.add(token, TOK_TYPE_OPERAND);
+                    tokens.add(token, offset - token.length, TOK_TYPE_OPERAND);
                     token = "";
                 }
-                tokens.add(doubleChar(), TOK_TYPE_OP_IN, TOK_SUBTYPE_LOGICAL);
+                tokens.add(doubleChar(), offset, TOK_TYPE_OP_IN, TOK_SUBTYPE_LOGICAL);
                 offset += 2;
                 continue;
             }
@@ -563,10 +564,10 @@
             // standard infix operators
             if (("+-*/^&=><").indexOf(currentChar()) !== -1) {
                 if (token.length > 0) {
-                    tokens.add(token, TOK_TYPE_OPERAND);
+                    tokens.add(token, offset - token.length, TOK_TYPE_OPERAND);
                     token = "";
                 }
-                tokens.add(currentChar(), TOK_TYPE_OP_IN);
+                tokens.add(currentChar(), offset, TOK_TYPE_OP_IN);
                 offset += 1;
                 continue;
             }
@@ -574,10 +575,10 @@
             // standard postfix operators
             if (("%").indexOf(currentChar()) !== -1) {
                 if (token.length > 0) {
-                    tokens.add(token, TOK_TYPE_OPERAND);
+                    tokens.add(token, offset - token.length, TOK_TYPE_OPERAND);
                     token = "";
                 }
-                tokens.add(currentChar(), TOK_TYPE_OP_POST);
+                tokens.add(currentChar(), offset, TOK_TYPE_OP_POST);
                 offset += 1;
                 continue;
             }
@@ -585,10 +586,10 @@
             // start subexpression or function
             if (currentChar() === "(") {
                 if (token.length > 0) {
-                    tokenStack.push(tokens.add(token, TOK_TYPE_FUNCTION, TOK_SUBTYPE_START));
+                    tokenStack.push(tokens.add(token, offset - token.length, TOK_TYPE_FUNCTION, TOK_SUBTYPE_START));
                     token = "";
                 } else {
-                    tokenStack.push(tokens.add("", TOK_TYPE_SUBEXPR, TOK_SUBTYPE_START));
+                    tokenStack.push(tokens.add("", offset, TOK_TYPE_SUBEXPR, TOK_SUBTYPE_START));
                 }
                 offset += 1;
                 continue;
@@ -597,13 +598,13 @@
             // function, subexpression, array parameters
             if (currentChar() === "," && !root.excelFormulaUtilities.isEu) {
                 if (token.length > 0) {
-                    tokens.add(token, TOK_TYPE_OPERAND);
+                    tokens.add(token, offset - token.length, TOK_TYPE_OPERAND);
                     token = "";
                 }
                 if (tokenStack.type() !== TOK_TYPE_FUNCTION) {
-                    tokens.add(currentChar(), TOK_TYPE_OP_IN, TOK_SUBTYPE_UNION);
+                    tokens.add(currentChar(), offset, TOK_TYPE_OP_IN, TOK_SUBTYPE_UNION);
                 } else {
-                    tokens.add(currentChar(), TOK_TYPE_ARGUMENT);
+                    tokens.add(currentChar(), offset, TOK_TYPE_ARGUMENT);
                 }
                 offset += 1;
                 continue;
@@ -612,10 +613,10 @@
             // stop subexpression
             if (currentChar() === ")") {
                 if (token.length > 0) {
-                    tokens.add(token, TOK_TYPE_OPERAND);
+                    tokens.add(token, offset - token.length, TOK_TYPE_OPERAND);
                     token = "";
                 }
-                tokens.addRef(tokenStack.pop());
+                tokens.addRef(tokenStack.pop("", offset));
                 offset += 1;
                 continue;
             }
@@ -627,8 +628,22 @@
         }
 
         // dump remaining accumulation
-        if (token.length > 0) {
-            tokens.add(token, TOK_TYPE_OPERAND);
+        if (token.length > 0 || inString || inPath || inRange || inError) {
+          if (inString || inPath || inRange || inError) {
+            if (inString) {
+              token = "\"" + token;
+            } else if (inPath) {
+              token = "'" + token;
+            } else if (inRange) {
+              token = "[" + token;
+            } else if (inError) {
+              token = "#" + token;
+            }
+
+            tokens.add(token, offset - token.length, TOK_TYPE_UNKNOWN);
+          } else {
+            tokens.add(token, offset - token.length, TOK_TYPE_OPERAND);
+          }
         }
 
         // move all tokens to a new collection, excluding all unnecessary white-space tokens
@@ -649,13 +664,13 @@
                 //  {}
                 doAddToken = doAddToken && (((tokens.next().type.toString() === TOK_TYPE_FUNCTION) && (tokens.next().subtype.toString() === TOK_SUBTYPE_START)) || ((tokens.next().type.toString() === TOK_TYPE_SUBEXPR) && (tokens.next().subtype.toString() === TOK_SUBTYPE_START)) || (tokens.next().type.toString() === TOK_TYPE_OPERAND));
                 //else if (!(
-                //  ((tokens.next().type == TOK_TYPE_FUNCTION) && (tokens.next().subtype == TOK_SUBTYPE_START))
-                //  || ((tokens.next().type == TOK_TYPE_SUBEXPR) && (tokens.next().subtype == TOK_SUBTYPE_START))
-                //  || (tokens.next().type == TOK_TYPE_OPERAND)))
-                //  {}
+                //	((tokens.next().type == TOK_TYPE_FUNCTION) && (tokens.next().subtype == TOK_SUBTYPE_START))
+                //	|| ((tokens.next().type == TOK_TYPE_SUBEXPR) && (tokens.next().subtype == TOK_SUBTYPE_START))
+                //	|| (tokens.next().type == TOK_TYPE_OPERAND)))
+                //	{}
                 //else { tokens2.add(token.value, TOK_TYPE_OP_IN, TOK_SUBTYPE_INTERSECT)};
                 if (doAddToken) {
-                    tokens2.add(token.value.toString(), TOK_TYPE_OP_IN, TOK_SUBTYPE_INTERSECT);
+                    tokens2.add(token.value.toString(), token.index, TOK_TYPE_OP_IN, TOK_SUBTYPE_INTERSECT);
                 }
                 continue;
             }
@@ -814,9 +829,10 @@
     function breakOutRanges(rangeStr, delimStr){
 
         //Quick Check to see if if rangeStr is a valid range
-        if ( !RegExp("[a-z]+[0-9]+:[a-z]+[0-9]+","gi").test(rangeStr) ){
+        if ( !RegExp("\\$?[a-z]+\\$?[0-9]+:\\$?[a-z]+\\$?[0-9]+","gi").test(rangeStr) ){
             throw "This is not a valid range: " + rangeStr;
         }
+        rangeStr = rangeStr.replace(/\$/g, '');
 
         //Make the rangeStr lowercase to deal with looping.
         var range = rangeStr.split(":"),
@@ -987,10 +1003,10 @@
             tokenString = formatStr(replaceTokenTmpl(options.tmplLogical), tokenString, indt, lineBreak);
             break;
         case "argument":
-            if(lastToken.type !== "argument"){
-                tokenString = formatStr(replaceTokenTmpl(options.tmplArgument), tokenString, indt, lineBreak);
+        	if(lastToken.type !== "argument"){
+        		tokenString = formatStr(replaceTokenTmpl(options.tmplArgument), tokenString, indt, lineBreak);
             } else  {
-                tokenString = formatStr(replaceTokenTmpl("{{autoindent}}"+options.tmplArgument), tokenString, indt, lineBreak);
+            	tokenString = formatStr(replaceTokenTmpl("{{autoindent}}"+options.tmplArgument), tokenString, indt, lineBreak);
             }
             break;
         case "subexpression":
@@ -1027,7 +1043,7 @@
      *  tmplOperandLogical          - template for logical operators such as + - = ...
      *  tmplOperandNumber           - template for numbers.
      *  tmplOperandText             - template for text/strings.
-     *  tmplArgument                - template for argument seperators such as ,.
+     *  tmplArgument				- template for argument seperators such as ,.
      *  tmplFunctionStartArray      - template for the start of an array.
      *  tmplFunctionStartArrayRow   - template for the start of an array row.
      *  tmplFunctionStopArrayRow    - template for the end of an array row.
@@ -1039,7 +1055,7 @@
      *  autoLineBreak               - when rendering line breaks automaticly which types should it break on. "TOK_SUBTYPE_STOP | TOK_SUBTYPE_START | TOK_TYPE_ARGUMENT"
      *  newLine                     - used for the {{autolinebreak}} replacement as well as some string parsing. if this is not set correctly you may get undesired results. usually \n for text or <br /> for html
      *  trim: true                  - trim the output.
-     *  customTokenRender: null     - this is a call back to a custom token function. your call back should look like
+     *	customTokenRender: null     - this is a call back to a custom token function. your call back should look like
      *                                EXAMPLE:
      *
      *                                    customTokenRender: function(tokenString, token, indent, linbreak){
@@ -1166,8 +1182,23 @@
      * @param {string} formula
      * @param {object} options optional param
      */
-    var formatFormulaHTML = excelFormulaUtilities.formatFormulaHTML = function (formula) {
-        var options = {
+    var formatFormulaHTML = excelFormulaUtilities.formatFormulaHTML = function (formula, options) {
+        var tokRender = function(tokenStr, token, indent, linbreak){
+          var outstr = tokenStr;
+          switch (token.type.toString()) {
+            case TOK_TYPE_OPERAND:
+              if(token.subtype === TOK_SUBTYPE_TEXT){
+                outstr = tokenStr.replace(/</gi,"&lt;").replace(/>/gi,"&gt;");
+              }
+              break;
+          }
+
+          return {
+              tokenString: outstr,
+              useTemplate: true
+          };
+        }
+        var defaultOptions = {
             tmplFunctionStart: '{{autoindent}}<span class="function">{{token}}</span><span class="function_start">(</span><br />',
             tmplFunctionStop: '<br />{{autoindent}}{{token}}<span class="function_stop">)</span>',
             tmplOperandText: '{{autoindent}}<span class="quote_mark">"</span><span class="text">{{token}}</span><span class="quote_mark">"</span>',
@@ -1180,8 +1211,14 @@
             autoLineBreak: 'TOK_TYPE_FUNCTION | TOK_TYPE_ARGUMENT | TOK_SUBTYPE_LOGICAL | TOK_TYPE_OP_IN ',
             trim: true,
             prefix: "=",
-            customTokenRender: null
+            customTokenRender: tokRender
         };
+
+        if (options) {
+            options = core.extend(true, defaultOptions, options);
+        } else {
+            options = defaultOptions;
+        }
 
         return formatFormula(formula, options);
     }
@@ -1193,7 +1230,7 @@
      * @param {string} formula
      * @returns {string}
      */
-    var formula2CSharp = excelFormulaUtilities.formula2CSharp = function (formula) {
+    var formula2CSharp = excelFormulaUtilities.formula2CSharp = function (formula, options) {
 
         //Custom callback to format as c#
         var functionStack = [];
@@ -1239,7 +1276,7 @@
                     useTemplate = true;
                     switch (currentFunctionOnStack.name.toLowerCase()) {
                     case "if":
-                        outstr = ")";
+                        outstr = currentFunctionOnStack.argumentNumber === 1 ? ":0)" : ")";
                         useTemplate = false;
                         break;
                     default:
@@ -1353,8 +1390,7 @@
             };
         };
 
-        var cSharpOutput = formatFormula(
-        formula, {
+        var defaultOptions = {
             tmplFunctionStart: '{{token}}(',
             tmplFunctionStop: '{{token}})',
             tmplOperandError: '{{token}}',
@@ -1375,7 +1411,15 @@
             autoLineBreak: "TOK_SUBTYPE_STOP | TOK_SUBTYPE_START | TOK_TYPE_ARGUMENT",
             trim: true,
             customTokenRender: tokRender
-        });
+        };
+
+        if (options) {
+            options = core.extend(true, defaultOptions, options);
+        } else {
+            options = defaultOptions;
+        }
+
+        var cSharpOutput = formatFormula(formula, options);
         return cSharpOutput;
     };
 
@@ -1386,9 +1430,222 @@
      * @param {string} formula
      * @returns {string}
      */
-    var formula2JavaScript = excelFormulaUtilities.formula2JavaScript = function (formula) {
-        return formula2CSharp(formula).replace('==', '===');
+    var formula2JavaScript = excelFormulaUtilities.formula2JavaScript = function (formula, options) {
+        return formula2CSharp(formula, options).replace('==', '===');
     }
+
+    /**
+     *
+     * @memberof excelFormulaUtilities.convert
+     * @function
+     * @param {string} formula
+     * @returns {string}
+     */
+    var formula2Python = excelFormulaUtilities.formula2Python = function (formula, options) {
+
+        //Custom callback to format as c#
+        var functionStack = [];
+
+        var tokRender = function (tokenStr, token, indent, linbreak) {
+            var outstr = "",
+                /*tokenString = (token.value.length === 0) ? "" : token.value.toString(),*/
+                tokenString = tokenStr,
+                directConversionMap = {
+                    "=": "==",
+                    "<>": "!=",
+                    "MIN": "min",
+                    "MAX": "max",
+                    "ABS": "math.fabs",
+                    "SUM": "",
+                    "IF": "",
+                    "&": "+",
+                    "AND": "",
+                    "OR": "",
+                    "NOT": "!",
+                    "TRUE": "True",
+                    "FALSE": "False"
+                },
+                currentFunctionOnStack = functionStack[functionStack.length - 1],
+                useTemplate = false;
+
+            switch (token.type.toString()) {
+
+            case TOK_TYPE_FUNCTION:
+
+                switch (token.subtype) {
+
+                case TOK_SUBTYPE_START:
+
+                    functionStack.push({
+                        name: tokenString,
+                        argumentNumber: 0
+                    });
+                    outstr = typeof directConversionMap[tokenString.toUpperCase()] === "string" ? directConversionMap[tokenString.toUpperCase()] : tokenString;
+                    useTemplate = true;
+
+                    break;
+
+                case TOK_SUBTYPE_STOP:
+
+                    useTemplate = true;
+                    switch (currentFunctionOnStack.name.toLowerCase()) {
+                    case "if":
+                        outstr = ",))[0]";
+                        if (currentFunctionOnStack.argumentNumber === 1) {
+                          outstr = " or (0" + outstr;
+                        }
+                        useTemplate = false;
+                        break;
+                    default:
+                        outstr = typeof directConversionMap[tokenString.toUpperCase()] === "string" ? directConversionMap[tokenString.toUpperCase()] : tokenString;
+                        break
+                    }
+                    functionStack.pop();
+                    break;
+                }
+
+                break;
+
+            case TOK_TYPE_ARGUMENT:
+                switch (currentFunctionOnStack.name.toLowerCase()) {
+                case "if":
+                    switch (currentFunctionOnStack.argumentNumber) {
+                    case 0:
+                        outstr = " and (";
+                        break;
+                    case 1:
+                        outstr = ",) or (";
+                        break;
+                    }
+                    break;
+                case "sum":
+                    outstr = "+";
+                    break;
+                case "and":
+                    outstr = " and ";
+                    break;
+                case "or":
+                    outstr = " or ";
+                    break;
+                default:
+                    outstr = typeof directConversionMap[tokenString.toUpperCase()] === "string" ? directConversionMap[tokenString.toUpperCase()] : tokenString;
+                    useTemplate = true;
+                    break;
+                }
+
+                currentFunctionOnStack.argumentNumber += 1;
+
+                break;
+
+            case TOK_TYPE_OPERAND:
+
+                switch (token.subtype) {
+
+                    case TOK_SUBTYPE_RANGE:
+                        //Assume '=' sign
+                        if(!currentFunctionOnStack){
+                          break;
+                        }
+
+                        if (RegExp("true|false", "gi").test(tokenString)) {
+                          outstr = typeof directConversionMap[tokenString.toUpperCase()] === "string" ? directConversionMap[tokenString.toUpperCase()] : tokenString;
+                          break;
+                        }
+
+                        switch (currentFunctionOnStack.name.toLowerCase()) {
+                        // If in the sum function break aout cell names and add
+                        case "sum":
+                            //TODO make sure this is working
+                            if(RegExp(":","gi").test(tokenString)){
+                                outstr = breakOutRanges(tokenString, "+");
+                            } else {
+                                outStr = tokenString;
+                            }
+
+                            break;
+                        case "and":
+                            //TODO make sure this is working
+                            if(RegExp(":","gi").test(tokenString)){
+                                outstr = breakOutRanges(tokenString, " and ");
+                            } else {
+                                outStr = tokenString;
+                            }
+
+                            break;
+                        case "or":
+                            //TODO make sure this is working
+                            if(RegExp(":","gi").test(tokenString)){
+                                outstr = breakOutRanges(tokenString, " or ");
+                            } else {
+                                outStr = tokenString;
+                            }
+
+                            break;
+                        // By Default return an array containing all cell names in array
+                        default:
+                            // Create array for ranges
+                            if(RegExp(":","gi").test(tokenString)){
+                                outstr = "[" + breakOutRanges(tokenString, ",") +"]";
+                            } else {
+                                outstr = tokenString;
+                            }
+                            //debugger;
+                            break;
+                        }
+
+                        break;
+
+                    default:
+                        break;
+                }
+
+            default:
+                if( outstr === "" ){
+                    outstr = typeof directConversionMap[tokenString.toUpperCase()] === "string" ? directConversionMap[tokenString.toUpperCase()] : tokenString;
+                }
+                useTemplate = true;
+                break;
+            }
+
+            return {
+                tokenString: outstr,
+                useTemplate: useTemplate
+            };
+        };
+
+        var defaultOptions = {
+            tmplFunctionStart: '{{token}}(',
+            tmplFunctionStop: '{{token}})',
+            tmplOperandError: '{{token}}',
+            tmplOperandRange: '{{token}}',
+            tmplOperandLogical: '{{token}}',
+            tmplOperandNumber: '{{token}}',
+            tmplOperandText: '"{{token}}"',
+            tmplArgument: '{{token}}',
+            tmplOperandOperatorInfix: '{{token}}',
+            tmplFunctionStartArray: "",
+            tmplFunctionStartArrayRow: "{",
+            tmplFunctionStopArrayRow: "}",
+            tmplFunctionStopArray: "",
+            tmplSubexpressionStart: "(",
+            tmplSubexpressionStop: ")",
+            tmplIndentTab: "\t",
+            tmplIndentSpace: " ",
+            autoLineBreak: "TOK_SUBTYPE_STOP | TOK_SUBTYPE_START | TOK_TYPE_ARGUMENT",
+            trim: true,
+            customTokenRender: tokRender
+        };
+
+        if (options) {
+            options = core.extend(true, defaultOptions, options);
+        } else {
+            options = defaultOptions;
+        }
+
+        var pythonOutput = formatFormula(formula, options);
+
+        return pythonOutput;
+    };
 
     excelFormulaUtilities.getTokens = getTokens;
 
