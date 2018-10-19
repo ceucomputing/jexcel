@@ -4550,41 +4550,41 @@ var methods = {
             index = 1;
         }
 
-        // Create chain
-        var regex = /([A-Z]+[0-9]+)*/g;
-
-        // Formula
-        var formula = excelFormulaUtilities.formula2JavaScript(value);
-
-        // Elements
-        var elements = formula.match(regex).filter(function(n) { return n != '' }).sort(function(a, b) {
-            a = $.fn.jexcel('getIdFromColumnName', a, true);
-            b = $.fn.jexcel('getIdFromColumnName', b, true);
-
-            if (index > 0) {
-                return (b[0] - a[0]);
+        // Trim value using same logic as excel-formula
+        var trimmedValue = value;
+        while (trimmedValue.length > 0) {
+            if (trimmedValue.substr(0, 1) === " ") {
+                trimmedValue = trimmedValue.substr(1);
             } else {
-                return (a[0] - b[0]);
-            }
-        });
-
-        for (var i = 0; i < elements.length; i++) {
-            if (elements[i]) {
-                // Get excel-like variable
-                var f = $.fn.jexcel('getIdFromColumnName', elements[i], true);
-                // New letter
-                var letter = f[0] + index;
-                if (letter < 0) {
-                    letter = 0;
+                if (trimmedValue.substr(0, 1) === "=") {
+                    trimmedValue = trimmedValue.substr(1);
                 }
-                // Get jexcel variable
-                var t = $.fn.jexcel('getColumnName', letter);
-                // Shift element from the formula
-                value = value.replace(new RegExp(elements[i], "g"), t + (f[1] + 1));
+                break;
             }
         }
 
-        return value;
+        // Tokenize value
+        var tokens = excelFormulaUtilities.getTokens(value).items;
+
+        // Iterate backwards through tokens and amend ranges
+        for (var i = tokens.length - 1; i >= 0; --i) {
+            var token = tokens[i];
+            if (token.subtype !== "range") continue;
+            var columnRegex = /[A-Z]+/gi;
+            var results = [];
+            while (result = columnRegex.exec(token.value)) {
+                results.push(result);
+            }
+            for (var j = results.length - 1; j >= 0; --j) {
+                var result = results[j];
+                var originalColumn = result[0];
+                var originalLocation = result.index;
+                var newColumnIndex = Math.max(0, $.fn.jexcel('getIdFromColumnName', originalColumn, true)[0] + index);
+                var newColumn = $.fn.jexcel('getColumnName', newColumnIndex);
+                trimmedValue = trimmedValue.slice(0, token.index + originalLocation) + newColumn + trimmedValue.slice(token.index + originalLocation + originalColumn.length);
+            }
+        }
+        return "=" + trimmedValue;
     },
 
     /**
@@ -4599,42 +4599,40 @@ var methods = {
             index = 1;
         }
 
-        // Create chain
-        var regex = /([A-Z]+[0-9]+)*/g;
-
-        // Formula
-        var formula = excelFormulaUtilities.formula2JavaScript(value);
-
-        // Elements
-        var elements = formula.match(regex).filter(function(n) { return n != '' }).sort(function(a, b) {
-            a = $.fn.jexcel('getIdFromColumnName', a, true);
-            b = $.fn.jexcel('getIdFromColumnName', b, true);
-
-            if (index > 0) {
-                return (b[1] - a[1]);
+        // Trim value using same logic as excel-formula
+        var trimmedValue = value;
+        while (trimmedValue.length > 0) {
+            if (trimmedValue.substr(0, 1) === " ") {
+                trimmedValue = trimmedValue.substr(1);
             } else {
-                return (a[1] - b[1]);
-            }
-        });
-
-        for (var i = 0; i < elements.length; i++) {
-            if (elements[i]) {
-                // Get excel-like variable
-                var f = $.fn.jexcel('getIdFromColumnName', elements[i], true);
-                // Get jexcel variable
-                var t = '' + $.fn.jexcel('getColumnName', f[0]);
-                // New number
-                var number = f[1] + 1 + index;
-                // New number can't be lower than 1
-                if (number < 1) {
-                    number = 1;
+                if (trimmedValue.substr(0, 1) === "=") {
+                    trimmedValue = trimmedValue.substr(1);
                 }
-                // Shift element from the formula
-                value = value.replace(new RegExp(elements[i], "g"), t + number);
+                break;
             }
         }
 
-        return value;
+        // Tokenize value
+        var tokens = excelFormulaUtilities.getTokens(value).items;
+
+        // Iterate backwards through tokens and amend ranges
+        for (var i = tokens.length - 1; i >= 0; --i) {
+            var token = tokens[i];
+            if (token.subtype !== "range") continue;
+            var rowRegex = /[0-9]+/g;
+            var results = [];
+            while (result = rowRegex.exec(token.value)) {
+                results.push(result);
+            }
+            for (var j = results.length - 1; j >= 0; --j) {
+                var result = results[j];
+                var originalRow = result[0];
+                var originalLocation = result.index;
+                var newRow = '' + Math.max(1, parseInt(originalRow) + index);
+                trimmedValue = trimmedValue.slice(0, token.index + originalLocation) + newRow + trimmedValue.slice(token.index + originalLocation + originalRow.length);
+            }
+        }
+        return "=" + trimmedValue;
     },
 
 
