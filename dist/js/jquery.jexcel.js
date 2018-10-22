@@ -759,7 +759,9 @@ var methods = {
                         var d = $(selection[selection.length - 1]).prop('id').split('-');
 
                         // Copy data
-                        $('#' + $.fn.jexcel.current).jexcel('copyData', o, d);
+                        var highlight = $('#' + $.fn.jexcel.current).find('tbody td.highlight');
+                        var origin = $(highlight[0]).prop('id').split('-');
+                        $('#' + $.fn.jexcel.current).jexcel('copyData', o, d, origin);
 
                         // Remove selection
                         $(selection).removeClass('selection selection-left selection-right selection-top selection-bottom');
@@ -803,7 +805,9 @@ var methods = {
                                 o[1] = parseInt(d[1]) + 1;
                                 d[1] = parseInt($.fn.jexcel.defaults[$.fn.jexcel.current].data.length);
                                 // Do copy
-                                $('#' + $.fn.jexcel.current).jexcel('copyData', o, d);
+                                var highlight = $('#' + $.fn.jexcel.current).find('tbody td.highlight');
+                                var origin = $(highlight[0]).prop('id').split('-');
+                                $('#' + $.fn.jexcel.current).jexcel('copyData', o, d, origin);
                             }
                         }
 
@@ -2650,6 +2654,7 @@ var methods = {
         var val = '';
         var pc = false;
         var pr = false;
+        var originFound = false;
 
         // Column and row length
         var x = $(this).find('thead tr td').not(':first').length;
@@ -2665,6 +2670,10 @@ var methods = {
 
                 // If cell is highlighted
                 if (! highlighted || $(cell).hasClass('highlight')) {
+                    if (!originFound) {
+                        originFound = true;
+                        $.fn.jexcel.clipboardOrigin = [i, j];
+                    }
                     if (pc) {
                         row += delimiter;
                     }
@@ -2696,6 +2705,7 @@ var methods = {
             document.execCommand("copy");
         }
 
+        $.fn.jexcel.clipboardStr = str;
         return str;
     },
 
@@ -2748,6 +2758,7 @@ var methods = {
         }
 
         // Parse paste
+        var matchesClipboard = data === $.fn.jexcel.clipboardStr;
         data = $(this).jexcel('parseCSV', data, "\t")
 
         // Initial position
@@ -2783,12 +2794,17 @@ var methods = {
 
                     // If cell exists
                     if ($(cell).length > 0) {
+                        var newValue = row[i];
+                        if (matchesClipboard && newValue[0] == '=') {
+                            newValue = $.fn.jexcel('shiftFormulaByColumn', newValue, x - $.fn.jexcel.clipboardOrigin[0]);
+                            newValue = $.fn.jexcel('shiftFormulaByRow', newValue, y - $.fn.jexcel.clipboardOrigin[1]);
+                        }
                         // Keep cells history
                         records.push({
                             col: (parseInt(i) + parseInt(x)),
                             row: (parseInt(j) + parseInt(y)),
                             cell: $(cell),
-                            newValue: row[i],
+                            newValue: newValue,
                             oldValue: $.fn.jexcel.defaults[id].data[(parseInt(j) + parseInt(y))][(parseInt(i) + parseInt(x))],
                         });
                     }
@@ -3596,7 +3612,7 @@ var methods = {
     /**
      * Helper function to copy data using the corner icon
      */
-    copyData : function(o, d) {
+    copyData : function(o, d, origin) {
         // Get data from all selected cells
         var data = $(this).jexcel('getData', true);
 
@@ -3633,12 +3649,17 @@ var methods = {
 
                 // Update non-readonly
                 if ($(cell).length && ! $(cell).hasClass('readonly')) {
+                    var newValue = data[posy][posx];
+                    if (newValue[0] == '=') {
+                        newValue = $.fn.jexcel('shiftFormulaByColumn', newValue, i - origin[0] + posx);
+                        newValue = $.fn.jexcel('shiftFormulaByRow', newValue, j - origin[1] + posy);
+                    }
                     // Keep cells history
                     records.push({
                         col: i,
                         row: j,
                         cell: $(cell),
-                        newValue: data[posy][posx],
+                        newValue: newValue,
                         oldValue: $.fn.jexcel.defaults[$.fn.jexcel.current].data[j][i],
                     });
                 }
@@ -4546,7 +4567,7 @@ var methods = {
      */
     shiftFormulaByColumn : function(value, index) {
         // Default
-        if (! index) {
+        if (! index && index !== 0) {
             index = 1;
         }
 
@@ -4579,6 +4600,7 @@ var methods = {
                 var result = results[j];
                 var originalColumn = result[0];
                 var originalLocation = result.index;
+                if (originalLocation > 0 && token.value[originalLocation - 1] === '$') continue;
                 var newColumnIndex = Math.max(0, $.fn.jexcel('getIdFromColumnName', originalColumn, true)[0] + index);
                 var newColumn = $.fn.jexcel('getColumnName', newColumnIndex);
                 trimmedValue = trimmedValue.slice(0, token.index + originalLocation) + newColumn + trimmedValue.slice(token.index + originalLocation + originalColumn.length);
@@ -4595,7 +4617,7 @@ var methods = {
      */
     shiftFormulaByRow : function(value, index) {
         // Default
-        if (! index) {
+        if (! index && index !== 0) {
             index = 1;
         }
 
@@ -4628,6 +4650,7 @@ var methods = {
                 var result = results[j];
                 var originalRow = result[0];
                 var originalLocation = result.index;
+                if (originalLocation > 0 && token.value[originalLocation - 1] === '$') continue;
                 var newRow = '' + Math.max(1, parseInt(originalRow) + index);
                 trimmedValue = trimmedValue.slice(0, token.index + originalLocation) + newRow + trimmedValue.slice(token.index + originalLocation + originalRow.length);
             }
