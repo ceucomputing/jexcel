@@ -981,7 +981,12 @@ var methods = {
                     if (! $($.fn.jexcel.selectedCell).hasClass('edition')) {
                         if (e.originalEvent) {
                             if ($.fn.jexcel.defaults[$.fn.jexcel.current].editable == true) {
-                                $('#' + $.fn.jexcel.current).jexcel('paste', $.fn.jexcel.selectedCell, e.originalEvent.clipboardData.getData('text'));
+                                var highlight = $('#' + $.fn.jexcel.current).find('tbody td.highlight');
+                                if ($(highlight).length > 0) {
+                                    var startAddress = $(highlight[0]).prop('id').split('-');
+                                    var endAddress = $(highlight[highlight.length - 1]).prop('id').split('-');
+                                    $('#' + $.fn.jexcel.current).jexcel('paste', $.fn.jexcel.selectedCell, e.originalEvent.clipboardData.getData('text'), startAddress, endAddress);
+                                }
                             }
                             e.preventDefault();
                         }
@@ -2748,7 +2753,7 @@ var methods = {
      * @param integer row number
      * @return string value
      */
-    paste : function(cell, data) {
+    paste : function(cell, data, startAddress, endAddress) {
         // Id
         var id = $(this).prop('id');
 
@@ -2784,29 +2789,54 @@ var methods = {
             // Records
             var records = []; 
 
-            // Go through the columns to get the data
-            for (j = 0; j < data.length; j++) {
-                // Explode column values
-                row = data[j];
-                for (i = 0; i < row.length; i++) {
-                    // Get cell
-                    cell = $(this).find('#' + (parseInt(i) + parseInt(x))  + '-' + (parseInt(j) + parseInt(y)));
-
-                    // If cell exists
-                    if ($(cell).length > 0) {
-                        var newValue = row[i];
+            // Use different algorithm if only one cell was copied.
+            // TODO: Implement Excel's full heuristics for 1-dimensional copy and paste regions
+            if (data.length === 1 && data[0].length === 1) {
+                startAddress = [parseInt(startAddress[0]), parseInt(startAddress[1])];
+                endAddress = [parseInt(endAddress[0]), parseInt(endAddress[1])];
+                for (var i = startAddress[0]; i <= endAddress[0]; ++i) {
+                    for (var j = startAddress[1]; j <= endAddress[1]; ++j) {
+                        cell = $(this).find('#' + i  + '-' + j);
+                        var newValue = data[0][0];
                         if (matchesClipboard && newValue[0] == '=') {
-                            newValue = $.fn.jexcel('shiftFormulaByColumn', newValue, x - $.fn.jexcel.clipboardOrigin[0]);
-                            newValue = $.fn.jexcel('shiftFormulaByRow', newValue, y - $.fn.jexcel.clipboardOrigin[1]);
+                            newValue = $.fn.jexcel('shiftFormulaByColumn', newValue, i - $.fn.jexcel.clipboardOrigin[0]);
+                            newValue = $.fn.jexcel('shiftFormulaByRow', newValue, j - $.fn.jexcel.clipboardOrigin[1]);
                         }
                         // Keep cells history
                         records.push({
-                            col: (parseInt(i) + parseInt(x)),
-                            row: (parseInt(j) + parseInt(y)),
+                            col: i,
+                            row: j,
                             cell: $(cell),
                             newValue: newValue,
-                            oldValue: $.fn.jexcel.defaults[id].data[(parseInt(j) + parseInt(y))][(parseInt(i) + parseInt(x))],
+                            oldValue: $.fn.jexcel.defaults[id].data[j][i],
                         });
+                    }
+                }
+            } else {
+                // Go through the columns to get the data
+                for (j = 0; j < data.length; j++) {
+                    // Explode column values
+                    row = data[j];
+                    for (i = 0; i < row.length; i++) {
+                        // Get cell
+                        cell = $(this).find('#' + (parseInt(i) + parseInt(x))  + '-' + (parseInt(j) + parseInt(y)));
+
+                        // If cell exists
+                        if ($(cell).length > 0) {
+                            var newValue = row[i];
+                            if (matchesClipboard && newValue[0] == '=') {
+                                newValue = $.fn.jexcel('shiftFormulaByColumn', newValue, x - $.fn.jexcel.clipboardOrigin[0]);
+                                newValue = $.fn.jexcel('shiftFormulaByRow', newValue, y - $.fn.jexcel.clipboardOrigin[1]);
+                            }
+                            // Keep cells history
+                            records.push({
+                                col: (parseInt(i) + parseInt(x)),
+                                row: (parseInt(j) + parseInt(y)),
+                                cell: $(cell),
+                                newValue: newValue,
+                                oldValue: $.fn.jexcel.defaults[id].data[(parseInt(j) + parseInt(y))][(parseInt(i) + parseInt(x))],
+                            });
+                        }
                     }
                 }
             }
