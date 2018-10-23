@@ -748,7 +748,12 @@
 
         while (tokens2.moveNext()) {
             if (tokens2.current().type.toString() !== TOK_TYPE_NOOP) {
-                tokens.addRef(tokens2.current());
+                var token = tokens2.current();
+                while (tokens2.next() && tokens2.next().type === token.type && tokens2.next().subtype === token.subtype) {
+                    tokens2.moveNext();
+                    token.value += tokens2.current().value;
+                }
+                tokens.addRef(token);
             }
         }
 
@@ -1265,7 +1270,7 @@
                         name: tokenString,
                         argumentNumber: 0
                     });
-                    outstr = typeof directConversionMap[tokenString.toUpperCase()] === "string" ? directConversionMap[tokenString.toUpperCase()] : tokenString;
+                    outstr = typeof directConversionMap[tokenString.toUpperCase()] === "string" ? directConversionMap[tokenString.toUpperCase()] : tokenString.toUpperCase();
                     useTemplate = true;
 
                     break;
@@ -1324,7 +1329,7 @@
                 switch (token.subtype) {
 
                     case TOK_SUBTYPE_RANGE:
-                        tokenString = tokenString.replace(/\$/g, '');
+                        tokenString = tokenString.replace(/\$/g, '').toUpperCase();
                         //Assume '=' sign
                         if(!currentFunctionOnStack){
                           break;
