@@ -4516,7 +4516,7 @@ var methods = {
      */
     getIdFromColumnName : function (id, arr) {
         // Get the letters
-        var t = /^[a-zA-Z]+/.exec(id);
+        var t = /^[a-zA-Z]+/.exec(id.toUpperCase());
 
         if (t) {
             // Base 26 calculation
