@@ -3791,7 +3791,11 @@ var methods = {
             var regex = /([A-Z]+[0-9]+)*/g;
 
             // Formula
-            var formula = excelFormulaUtilities.formula2JavaScript(value);
+            try {
+                var formula = excelFormulaUtilities.formula2JavaScript(value);
+            } catch (e) {
+                var formula = '';
+            }
 
             // Elements
             var elements = formula.match(regex);
